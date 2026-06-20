@@ -8,6 +8,7 @@ enum SheetDestination: Identifiable {
 }
 
 struct ContentView: View {
+    @Environment(\.scenePhase) private var scenePhase
     @State private var store = DashboardStore()
     @State private var sheet: SheetDestination?
 
@@ -52,8 +53,23 @@ struct ContentView: View {
         }
         .task {
             store.loadCachedPayload()
-            if store.isConfigured {
-                await store.refresh()
+            while !Task.isCancelled {
+                if store.isConfigured {
+                    await store.refresh(showLoading: store.payload == nil)
+                }
+                do {
+                    try await Task.sleep(for: .seconds(30))
+                } catch {
+                    return
+                }
+            }
+        }
+        .onChange(of: scenePhase) { _, phase in
+            guard phase == .active, store.isConfigured else {
+                return
+            }
+            Task {
+                await store.refresh(showLoading: false)
             }
         }
         .refreshable {
@@ -180,4 +196,3 @@ struct StatusPill: View {
 #Preview {
     ContentView()
 }
-

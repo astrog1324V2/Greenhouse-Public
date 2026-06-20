@@ -219,6 +219,7 @@ final class DashboardStore {
     private let cache: DashboardCache
     private let tokenStore: KeychainTokenStore
     private let pairingParser = PairingCodeParser()
+    private var isRefreshInFlight = false
 
     init(
         apiClient: GreenhouseAPIClient = GreenhouseAPIClient(),
@@ -270,14 +271,25 @@ final class DashboardStore {
         }
     }
 
-    func refresh() async {
+    func refresh(showLoading: Bool = true) async {
         guard configuration.isReady else {
             errorMessage = "Pair with your Pi or enter connection settings."
             return
         }
+        guard !isRefreshInFlight else {
+            return
+        }
 
-        isLoading = true
-        defer { isLoading = false }
+        isRefreshInFlight = true
+        if showLoading {
+            isLoading = true
+        }
+        defer {
+            isRefreshInFlight = false
+            if showLoading {
+                isLoading = false
+            }
+        }
 
         let token = configuration.readToken.trimmingCharacters(in: .whitespacesAndNewlines)
         let targets = requestTargets()
@@ -312,4 +324,3 @@ final class DashboardStore {
         return targets
     }
 }
-

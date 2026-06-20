@@ -21,6 +21,8 @@ class Settings:
     stale_seconds: int
     mock_sensors: bool
     dht_pin_name: str
+    dht_retry_attempts: int
+    dht_retry_delay_seconds: float
     i2c_sda_name: str
     i2c_scl_name: str
     bh1750_address: int
@@ -58,6 +60,11 @@ def load_settings(env: dict[str, str] | None = None) -> Settings:
         stale_seconds=int(source.get("GREENHOUSE_STALE_SECONDS", "300")),
         mock_sensors=source.get("GREENHOUSE_MOCK_SENSORS", "0") == "1",
         dht_pin_name=source.get("GREENHOUSE_DHT_PIN", "D4"),
+        dht_retry_attempts=max(1, int(source.get("GREENHOUSE_DHT_RETRY_ATTEMPTS", "4"))),
+        dht_retry_delay_seconds=max(
+            0.0,
+            float(source.get("GREENHOUSE_DHT_RETRY_DELAY_SECONDS", "2.0")),
+        ),
         i2c_sda_name=source.get("GREENHOUSE_I2C_SDA", "SDA"),
         i2c_scl_name=source.get("GREENHOUSE_I2C_SCL", "SCL"),
         bh1750_address=int(source.get("GREENHOUSE_BH1750_ADDRESS", "0x23"), 0),
@@ -91,4 +98,3 @@ def _optional(value: str | None) -> str | None:
         return None
     cleaned = value.strip()
     return cleaned or None
-

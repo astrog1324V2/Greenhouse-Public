@@ -13,7 +13,13 @@ DATA_DIR="/var/lib/greenhouse-monitor"
 CONFIG_DIR="/etc/greenhouse-monitor"
 
 apt-get update
-apt-get install -y python3-venv python3-pip rsync i2c-tools libgpiod2
+GPIOD_PACKAGE=""
+if apt-cache show libgpiod3 >/dev/null 2>&1; then
+  GPIOD_PACKAGE="libgpiod3"
+elif apt-cache show libgpiod2 >/dev/null 2>&1; then
+  GPIOD_PACKAGE="libgpiod2"
+fi
+apt-get install -y python3-venv python3-pip rsync i2c-tools gpiod ${GPIOD_PACKAGE}
 
 id -u greenhouse >/dev/null 2>&1 || useradd --system --home "${DATA_DIR}" --shell /usr/sbin/nologin greenhouse
 for group in gpio i2c; do
@@ -45,6 +51,8 @@ GREENHOUSE_DEVICE_NAME=Greenhouse Monitor
 GREENHOUSE_SAMPLE_INTERVAL_SECONDS=60
 GREENHOUSE_STALE_SECONDS=300
 GREENHOUSE_DHT_PIN=D4
+GREENHOUSE_DHT_RETRY_ATTEMPTS=4
+GREENHOUSE_DHT_RETRY_DELAY_SECONDS=2.0
 GREENHOUSE_I2C_SDA=SDA
 GREENHOUSE_I2C_SCL=SCL
 GREENHOUSE_BH1750_ADDRESS=0x23
