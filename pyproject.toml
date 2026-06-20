@@ -1,0 +1,20 @@
+[project]
+name = "greenhouse-monitor"
+version = "0.1.0"
+description = "Local-first Raspberry Pi greenhouse monitor service."
+requires-python = ">=3.11"
+dependencies = [
+  "Flask>=3.0,<4.0",
+  "waitress>=3.0,<4.0",
+  "qrcode>=7.4,<9.0",
+  "adafruit-blinka>=8.0",
+  "adafruit-circuitpython-dht>=4.0",
+  "adafruit-circuitpython-bh1750>=1.0",
+]
+
+[tool.setuptools]
+package-dir = {"" = "pi"}
+
+[tool.setuptools.packages.find]
+where = ["pi"]
+

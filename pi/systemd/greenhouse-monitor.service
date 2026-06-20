@@ -1,0 +1,18 @@
+[Unit]
+Description=Greenhouse Monitor Raspberry Pi service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/greenhouse-monitor/config.env
+WorkingDirectory=/opt/greenhouse-monitor/app
+ExecStart=/opt/greenhouse-monitor/venv/bin/python -m greenhouse_monitor
+Restart=always
+RestartSec=5
+User=greenhouse
+Group=greenhouse
+
+[Install]
+WantedBy=multi-user.target
+

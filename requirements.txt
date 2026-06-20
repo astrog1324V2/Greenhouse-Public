@@ -1,0 +1,7 @@
+Flask>=3.0,<4.0
+waitress>=3.0,<4.0
+qrcode>=7.4,<9.0
+adafruit-blinka>=8.0
+adafruit-circuitpython-dht>=4.0
+adafruit-circuitpython-bh1750>=1.0
+
